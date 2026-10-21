@@ -1,4 +1,5 @@
-﻿# 波尔图出租车轨迹数据分析项目
+﻿```
+# 波尔图出租车轨迹数据分析项目
 > 数据集：train_100k（ECML/PKDD 2015公开脱敏子集）
 
 ## 📋项目简介
@@ -12,25 +13,27 @@
 - **C 吕宛泽**（组长）：Git仓库搭建与版本管理，文档审核修订，质量报告校对，统筹项目整体交付，组织PR评审
 
 ## 📂仓库目录说明
-data-analysis-project-2026
-├── data
-│   ├── raw            # 原始数据集，禁止修改
-│   └── clean          # 清洗后输出数据集
-├── code               # Jupyter、python 源代码
+```
+
+data-analysis-project-2026/
+├── data/
+│   ├── raw/          # 原始数据集，禁止修改
+│   └── clean/        # 清洗后输出数据集
+├── code/
 │   ├── 项目接入.ipynb
-│   ├── 数据收验与清洗.ipynb
+│   ├── 数据验收与清洗.ipynb
 │   └── compute_dq.py
-├── report
-│   ├── img            # 全部报告图表源文件
+├── report/
+│   ├── img/          # 全部报告图表源文件
 │   ├── 波尔图出租车轨迹数据质量分析报告.docx/.pdf
 │   ├── 数据分析业务报告.docx/.pdf
 │   ├── 个人总结_高帅龙.docx
 │   ├── 个人总结_薛宏博.docx
 │   ├── 个人总结_吕宛泽.docx
 │   └── 项目答辩 PPT.pptx
-├── worklog            # 项目工作日志，按日期记录
+├── worklog/
 │   ├── 2026-10-19.md
-│   └── 2026-10-shtur
+│   └── 2026-10-shutr
 └── README.md
 
 ```
@@ -49,3 +52,4 @@ data-analysis-project-2026
 5. 项目答辩PPT
 
 > 提交规范：新建feature功能分支，提交后发起Pull Request，组长审核通过再合并至main；**禁止直接push main主分支**，仅紧急测试除外。
+```
