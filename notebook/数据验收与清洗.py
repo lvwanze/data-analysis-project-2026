@@ -122,7 +122,7 @@ log_step("空轨迹", b, len(work))
 # 2 四要素完全重复
 b = len(work); work = work[~work.duplicated(
     subset=["TRIP_ID", "TAXI_ID", "TIMESTAMP", "POLYLINE"], keep="first")]
-log_step("完全重复", b, len(work))
+log_step("四字段组合重复", b, len(work))
 # 3 首点越界
 b = len(work)
 inbox = work["lng0"].between(*LNG_OK) & work["lat0"].between(*LAT_OK)
