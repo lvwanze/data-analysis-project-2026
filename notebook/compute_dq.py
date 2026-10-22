@@ -91,14 +91,17 @@ facts["DQ-07"] = {
 }
 
 # ---------- DQ-08 完全重复（原始 9 列）
-dup_full = int(raw.duplicated().sum())
-facts["DQ-08"] = {"完全重复行": dup_full}
+dup_full = int(raw.duplicated(
+    subset=["TRIP_ID", "TAXI_ID", "TIMESTAMP", "POLYLINE"]
+).sum())
+
+facts["DQ-08"] = {"四字段组合重复行": dup_full}
 
 # ---------- DQ-09 TRIP_ID 主键
 dup_id = int(raw["TRIP_ID"].duplicated(keep=False).sum())
 nuniq_id = int(raw["TRIP_ID"].nunique())
 facts["DQ-09"] = {"TRIP_ID唯一数": nuniq_id, "重复ID涉及行数": dup_id,
-                  "重复ID对数": int((N - nuniq_id))}
+                  "重复ID多余行数": int((N - nuniq_id))}
 
 # ---------- DQ-10 站台与叫车类型关联
 b = raw[raw["CALL_TYPE"] == "B"]
