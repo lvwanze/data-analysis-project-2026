@@ -72,9 +72,12 @@ print("MISSING_DATA  ：", raw["MISSING_DATA"].value_counts().to_dict())
 
 # 波尔图都市区合理框（含机场/港口），越界 = 坐标异常
 LNG_OK, LAT_OK = (-9.0, -8.0), (40.8, 41.6)
-oob = ~(raw["lng0"].between(*LNG_OK) & raw["lat0"].between(*LAT_OK))
-print(f"首点越出都市区框的行程：{oob.sum()} 趟")
-
+has_start = raw["lng0"].notna() & raw["lat0"].notna()
+oob = has_start & ~(
+    raw["lng0"].between(*LNG_OK) & raw["lat0"].between(*LAT_OK)
+)
+print(f"首点越出都市区框的行程：{oob.sum()} 趟"
+      f"（另有空轨迹 {(~has_start).sum()} 趟，不计入越界）")
 # ---------------------------------------------------------------- 一致性：GPS 点间隔
 print("\n" + "=" * 60, "\n一致性：GPS 点间距离（时间间隔标称 15s）\n", "=" * 60)
 # 抽样 5000 趟，计算相邻点的 haversine 距离（米），看 15 秒内能移动多远
@@ -125,7 +128,8 @@ b = len(work); work = work[~work.duplicated(
 log_step("四字段组合重复", b, len(work))
 # 3 首点越界
 b = len(work)
-inbox = work["lng0"].between(*LNG_OK) & work["lat0"].between(*LAT_OK)
+inbox = (work["lng0"].notna() & work["lat0"].notna()
+         & work["lng0"].between(*LNG_OK) & work["lat0"].between(*LAT_OK))
 work = work[inbox]
 log_step("首点越界", b, len(work))
 

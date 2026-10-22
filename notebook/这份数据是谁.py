@@ -90,7 +90,7 @@ print(f"峰值 {peak} 点 {hot_hourly.max()} 辆")
 # ---------------------------------------------------------------- 5 区域划分 + 潮汐
 print("\n" + "=" * 60, "\n5 区域划分与潮汐\n", "=" * 60)
 dcity = haversine(dwd["lng0"].values, dwd["lat0"].values, CITY[0], CITY[1])
-AIRPORT = (-8.686, 41.236)
+AIRPORT = (-8.681, 41.248)
 dair = haversine(dwd["lng0"].values, dwd["lat0"].values, AIRPORT[0], AIRPORT[1])
 def zone(d, da):
     if da < 1000: return "机场"
@@ -216,5 +216,4 @@ tc.finish(
     "每点=一趟首点；颜色=所属区域；统一色标与坐标框；机场=琥珀色",
     SOURCE, "D4_05_各时刻分布.png")
 
-dwd.to_pickle(tc.CACHE_DIR / "dwd.pkl")
 print("\nD4 完成：图片已保存至", tc.IMAGE_DIR)

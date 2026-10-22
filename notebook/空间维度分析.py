@@ -57,11 +57,16 @@ print(f"B/C 型站台关联率：{bc_rate:.1%}（不包含 A 型行程）")
 
 # ---------------------------------------------------------------- 3 站台定位（反推坐标）
 print("\n" + "=" * 60, "\n3 站台定位（用首点中位数反推）\n", "=" * 60)
+# 先算中位数和趟次
 stand_xy = (has_stand.assign(STAND=has_stand["ORIGIN_STAND"].astype(int))
             .groupby("STAND").agg(
                 lng=("lng0", "median"), lat=("lat0", "median"),
-                发车趟次=("TRIP_ID", "size"),
-                首点离散度=("lng0", lambda s: np.std(s) * 111000 * .75)))
+                发车趟次=("TRIP_ID", "size")))
+
+# 再算真实的物理距离离散度（米）
+_std_lng = has_stand.groupby(has_stand["ORIGIN_STAND"].astype(int))["lng0"].std().reindex(stand_xy.index)
+_std_lat = has_stand.groupby(has_stand["ORIGIN_STAND"].astype(int))["lat0"].std().reindex(stand_xy.index)
+stand_xy["首点离散度"] = np.hypot(_std_lng * 111320 * np.cos(np.radians(stand_xy["lat"])), _std_lat * 110540)
 print(f"定位站台 {len(stand_xy)} 个；离散度中位 {stand_xy['首点离散度'].median():.0f} m"
       "（越小说明首点越集中、定位越可信）")
 print(stand_xy.sort_values("发车趟次", ascending=False).head(8).to_string())
@@ -85,7 +90,7 @@ print(grid.sort_values("趟次", ascending=False).head(8).to_string(index=False)
 # 写维度表
 dim_stand = stand_xy.reset_index()
 dim_stand.to_pickle(tc.CACHE_DIR / "dim_stand.pkl")
-dwd.to_pickle(tc.CACHE_DIR / "dwd.pkl")
+dwd.to_pickle(tc.CACHE_DIR / "dwd_grid.pkl") # 派生列另存，绝不覆盖原表
 print("\n维度表 dim_stand / 网格 dwd 已更新")
 
 # ---------------------------------------------------------------- 5 站台间距 KDTree
