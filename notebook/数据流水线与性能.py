@@ -28,23 +28,32 @@ LAT0 = 41.15
 KM_LAT = 1 / 111.0
 KM_LNG = 1 / (111.32 * np.cos(np.radians(LAT0)))
 
+
 # ---------------------------------------------------------------- 1 清洗封装
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """D2 清洗规则的函数化：空轨迹 -> 完全重复 -> 首点越界。"""
-    d = raw[raw["n_pts"] > 0]
-    d = d[~d.duplicated(
+    # 1. 空轨迹
+    d = raw[raw["n_pts"] > 0].copy()
+
+    # 2. 四要素完全重复（转字符串防报错，对齐 D2 修改）
+    d = d[~d.assign(POLYLINE=d["POLYLINE"].astype(str)).duplicated(
         subset=["TRIP_ID", "TAXI_ID", "TIMESTAMP", "POLYLINE"], keep="first")]
-    d = d[d["lng0"].between(*LNG_OK) & d["lat0"].between(*LAT_OK)]
+
+    # 3. 首点越界（加入 notna，对齐 D2 修改）
+    inbox = (d["lng0"].notna() & d["lat0"].notna()
+             & d["lng0"].between(*LNG_OK) & d["lat0"].between(*LAT_OK))
+    d = d[inbox]
     return d.reset_index(drop=True)
+
 
 # ---------------------------------------------------------------- 2 维度封装
 def build_grid(dwd: pd.DataFrame) -> pd.DataFrame:
+    # 保持 D3 的网格逻辑不变
     lng_min, lat_min = dwd["lng0"].min(), dwd["lat0"].min()
     dwd = dwd.copy()
     dwd["gx"] = np.floor((dwd["lng0"] - lng_min) / KM_LNG).astype(int)
     dwd["gy"] = np.floor((dwd["lat0"] - lat_min) / KM_LAT).astype(int)
     return dwd
-
 def build_stands(dwd: pd.DataFrame) -> pd.DataFrame:
     h = dwd[dwd["ORIGIN_STAND"].notna()]
     st = (h.assign(STAND=h["ORIGIN_STAND"].astype(int)).groupby("STAND")
